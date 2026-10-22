@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#070b14" />
+  <title>贪吃蛇 · 闯关版</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">🐍</span>
+        <div class="brand-copy">
+          <p class="eyebrow">SNAKE QUEST</p>
+          <h1 class="title"><span class="title-text">贪吃蛇</span><span class="title-sub">闯关版</span></h1>
+        </div>
+      </div>
+      <div class="header-note">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>方向键 / WASD 转向 · 空格暂停 · 滑动屏幕也可操作</span>
+      </div>
+    </header>
+
+    <div class="game-layout">
+      <aside class="side-panel side-panel-left" aria-label="游戏数据与设置">
+        <section class="panel status-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">LIVE STATUS</p>
+              <h2 class="panel-title">对局状态</h2>
+            </div>
+            <span class="live-badge"><span></span>进行中</span>
+          </div>
+
+          <section class="hud" aria-label="数据面板">
+            <div class="hud-card hud-card-primary">
+              <span class="hud-label">得分</span>
+              <span class="hud-value" id="score">0</span>
+            </div>
+            <div class="hud-card">
+              <span class="hud-label">最高分</span>
+              <span class="hud-value" id="best">0</span>
+            </div>
+            <div class="hud-card">
+              <span class="hud-label">关卡</span>
+              <span class="hud-value" id="stage">1 / 10</span>
+            </div>
+            <div class="hud-card">
+              <span class="hud-label">等级</span>
+              <span class="hud-value" id="level">1</span>
+            </div>
+            <div class="hud-card">
+              <span class="hud-label">长度</span>
+              <span class="hud-value" id="length">3</span>
+            </div>
+            <div class="hud-card">
+              <span class="hud-label">升级次数</span>
+              <span class="hud-value" id="upgrades">0</span>
+            </div>
+            <div class="hud-card">
+              <span class="hud-label">开局次数</span>
+              <span class="hud-value" id="plays">0</span>
+            </div>
+            <div class="hud-card">
+              <span class="hud-label">当前难度</span>
+              <span class="hud-value" id="difficultyText">普通</span>
+            </div>
+          </section>
+        </section>
+
+        <section class="panel settings-panel">
+          <div class="panel-heading compact">
+            <div>
+              <p class="panel-kicker">GAME SETTINGS</p>
+              <h2 class="panel-title">游戏设置</h2>
+            </div>
+          </div>
+
+          <section class="difficulty" aria-label="难度选择">
+            <span class="difficulty-label">难度</span>
+            <div class="segmented" id="difficulty" role="group">
+              <button class="seg-btn" data-diff="easy" type="button">简单</button>
+              <button class="seg-btn is-active" data-diff="normal" type="button">普通</button>
+              <button class="seg-btn" data-diff="hard" type="button">困难</button>
+            </div>
+          </section>
+
+          <section class="actions">
+            <button class="btn" id="pauseBtn" type="button">暂停</button>
+            <button class="btn" id="restartBtn" type="button">重新开始</button>
+            <button class="btn btn-ghost" id="soundBtn" type="button">音效：开</button>
+          </section>
+        </section>
+      </aside>
+
+      <section class="board-slot" aria-label="游戏区域">
+        <div class="board-wrap">
+          <canvas id="board" width="960" height="960" aria-label="贪吃蛇棋盘"></canvas>
+
+          <div class="overlay" id="overlay">
+            <div class="overlay-inner">
+              <p class="overlay-emoji" id="overlayEmoji">🎮</p>
+              <h2 class="overlay-title" id="overlayTitle">准备好了吗？</h2>
+              <p class="overlay-text" id="overlayText">吃掉红苹果让蛇变长，别撞到墙壁、石墙和自己。</p>
+              <button class="btn btn-primary" id="overlayBtn" type="button">开始游戏</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-panel side-panel-right" aria-label="游戏操作与说明">
+        <section class="panel pad-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">DIRECTION PAD</p>
+              <h2 class="panel-title">方向控制</h2>
+            </div>
+            <span class="keycap-group" aria-hidden="true"><span class="keycap">↑</span><span class="keycap">↓</span><span class="keycap">←</span><span class="keycap">→</span></span>
+          </div>
+
+          <section class="pad" aria-label="触屏方向控制">
+            <button class="pad-btn pad-up" data-dir="up" type="button" aria-label="向上">▲</button>
+            <button class="pad-btn pad-left" data-dir="left" type="button" aria-label="向左">◀</button>
+            <button class="pad-btn pad-center" type="button" tabindex="-1" aria-hidden="true"></button>
+            <button class="pad-btn pad-down" data-dir="down" type="button" aria-label="向下">▼</button>
+            <button class="pad-btn pad-right" data-dir="right" type="button" aria-label="向右">▶</button>
+          </section>
+
+          <p class="pad-hint">点击方向键，或直接在棋盘上滑动</p>
+        </section>
+
+        <footer class="panel guide-panel tips">
+          <div class="panel-heading compact">
+            <div>
+              <p class="panel-kicker">HOW TO PLAY</p>
+              <h2 class="panel-title">玩法说明</h2>
+            </div>
+          </div>
+          <p class="tip-item"><span class="dot dot-red"></span><span><strong>红苹果</strong> +10 分，蛇身加长 1 节</span></p>
+          <p class="tip-item"><span class="dot dot-gold"></span><span><strong>金苹果</strong> +30 分，额外加长，7 秒后消失</span></p>
+          <p class="tip-item"><span class="dot dot-blue"></span><span><strong>关卡目标</strong> 每关吃满 8 个苹果，共 10 关</span></p>
+          <p class="tip-item"><span class="dot dot-green"></span><span><strong>升级规则</strong> 每吃 5 个苹果升 1 级，速度提升</span></p>
+        </footer>
+      </aside>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
